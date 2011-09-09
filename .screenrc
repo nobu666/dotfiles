@@ -1,9 +1,11 @@
-escape ^z^z
+escape ^ZZ
 vbell off
 startup_message off
 autodetach on
-vbell off
 defscrollback 50000
+defmonitor on
+backtick 0 0 0 echo ${ttyname}
 hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} %H %{..Y} %m/%d %C%a "
 hardstatus alwayslastline
-shell zsh
+logfile "$HOME/screen-log/screen-%Y%m%d-%n.log"
+deflog on

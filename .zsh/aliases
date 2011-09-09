@@ -1,0 +1,29 @@
+# $HOME/.zsh/aliases
+#
+echo "Loading $HOME/.zsh/aliases"
+
+alias ssh-start="ssh-start && . ~/.ssh/agent-env"
+
+case "${OSTYPE}" in
+freebsd*|darwin*)
+  alias ls="ls -G -w"
+  ;;
+linux*)
+  alias ls="ls -F --color"
+  ;;
+esac
+alias ll="ls -l"
+alias la="ls -altr"
+alias df="df -h"
+alias du="du -h"
+
+alias -g C="|cat"
+alias -g H="|head"
+alias -g S="|sort"
+alias -g U="|uniq"
+alias -g T="|tail"
+alias -g G="|grep"
+alias -g L="|lv"
+alias -g W="|wc"
+alias -g S="|sed"
+alias -g A="|awk"

@@ -1,90 +1,136 @@
-autoload -U compinit; compinit
-bindkey "\e[3~" delete-char
-export LANG=ja_JP.UTF-8
-export HOSTNAME=`hostname`
-export CATALINA_HOME=/usr/local/tomcat
-export JAVA_HOME=/usr/lib/jvm/default-java/jre
+[ -e "${HOME}/.ssh/agent-env" ] && . "${HOME}/.ssh/agent-env"
 
-[ -e "$HOME/.ssh/agent-env" ] && . "$HOME/.ssh/agent-env"
+fpath=($HOME/.zsh/myfunc $fpath)
 
-if [ "$TERM" = "screen" ]; then
-  preexec() {
-    emulate -L zsh
-#    local -a cmd; cmd=(${(z)2})
-#    echo -n "\ek$cmd[1]:t\e\\"
+autoload -Uz compinit;compinit
+autoload -Uz colors;colors
+autoload -Uz url-quote-magic;zle -N self-insert url-quote-magic
+
+export ZUSERDIR=.zsh
+
+# zsh が使うシェル変数のうちヒストリ（履歴機能）に関するもの
+
+HISTFILE=$HOME/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt append_history
+setopt extended_history
+setopt share_history
+if [ $UID = 0 ]; then
+  unset HISTFILE
+  SAVEHIST=0
+fi
+
+# core ファイルのサイズを 0 に抑制する
+unlimit
+limit core 0
+limit -s
+
+# ファイル作成時のデフォルトのモードを指定する
+umask 022
+
+# 端末の設定：Ctrl+H に 1 文字削除、Ctrl+C に割り込み、Ctrl+Z にサスペンド
+#stty erase '^H'
+#stty intr '^C'
+#stty susp '^Z'
+
+### key bindings
+bindkey -e                          # EDITOR=vi -> bindkey -v
+bindkey '^U' backward-kill-line     # override kill-whole-line
+bindkey '^[h' vi-backward-kill-word # override run-help
+bindkey '^[.' copy-prev-word        # override insert-last-word
+
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
+
+if [ -f $ZUSERDIR/zshoptions ]; then
+  source $ZUSERDIR/zshoptions
+fi
+if [ -f $ZUSERDIR/aliases ]; then
+  source $ZUSERDIR/aliases
+fi
+if [ -f $ZUSERDIR/functions ]; then
+  source $ZUSERDIR/functions
+fi
+if [ -f $ZUSERDIR/lscolors ]; then
+  source $ZUSERDIR/lscolors
+fi
+if [ -f $ZUSERDIR/zshrc.user ]; then
+  source $ZUSERDIR/zshrc.user
+fi
+
+if [ -n "${WINDOW}" ]; then
+  preexec () {
+    1="$1 "
+    echo -ne "\ek${${(s: :)1}[0]}\e\\"
   }
 fi
-function ssh_screen() {
-# eval server=\${$#}
- screen -t $@ ssh "$@"
+
+# gitで^とか~とかがextended_blobと被って困るのでなんとかする
+# http://subtech.g.hatena.ne.jp/cho45/20080617/1213629154
+typeset -A abbreviations
+abbreviations=(
+  "L"    "| $PAGER"
+  "G"    "| grep"
+
+  "HEAD^"     "HEAD\\^"
+  "HEAD^^"    "HEAD\\^\\^"
+  "HEAD^^^"   "HEAD\\^\\^\\^"
+  "HEAD^^^^"  "HEAD\\^\\^\\^\\^\\^"
+  "HEAD^^^^^" "HEAD\\^\\^\\^\\^\\^"
+)
+
+magic-abbrev-expand () {
+  local MATCH
+  LBUFFER=${LBUFFER%%(#m)[-_a-zA-Z0-9^]#}
+  LBUFFER+=${abbreviations[$MATCH]:-$MATCH}
 }
-if [ "$TERM" = "screen" ]; then
-  alias ssh=ssh_screen
-fi
 
-LESS=-M
-export LESS
-if type /usr/bin/lesspipe.sh &>/dev/null
-then
-  LESSOPEN="| /usr/bin/lesspipe.sh '%s'"
-  LESSCLOSE="/usr/bin/lesspipe.sh '%s' '%s'"
-  export LESSOPEN LESSCLOSE
-fi
+magic-abbrev-expand-and-insert () {
+  magic-abbrev-expand
+  zle self-insert
+}
 
-local GREEN=$'%{\e[1;32m%}'
-local BLUE=$'%{\e[1;34m%}'
-local DEFAULT=$'%{\e[1;m%}'
-PROMPT=$BLUE'[$USER@$HOSTNAME] %(!.#.$) '$DEFAULT
-RPROMPT=$GREEN'[%~]'$DEFAULT
-export LS_COLORS='di=01;36'
+magic-abbrev-expand-and-accept () {
+  magic-abbrev-expand
+  zle accept-line
+}
 
-zstyle ':comletion:*' use-cache true
-zstyle ':completion:*:sudo:*' command-path /home/nobu666/maven2/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+no-magic-abbrev-expand () {
+  LBUFFER+=' '
+}
 
-HISTFILE=/home/nobu/.zsh_history
-LISTMAX=10000
-HISTSIZE=100000
-SAVEHIST=200000000
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
-alias less="lv -c"
-alias ls="ls --color=auto"
-alias ll="ls -la --color=auto"
-alias grep="grep -v grep|grep --color"
-alias -g G='| grep '
-alias -g L='| less '
+zle -N magic-abbrev-expand
+zle -N magic-abbrev-expand-and-insert
+zle -N magic-abbrev-expand-and-accept
+zle -N no-magic-abbrev-expand
+bindkey "\r"  magic-abbrev-expand-and-accept # M-x RET はできなくなる
+bindkey "^J"  accept-line # no magic
+bindkey " "   magic-abbrev-expand-and-insert
+bindkey "."   magic-abbrev-expand-and-insert
+bindkey "^x " no-magic-abbrev-expand
 
-unsetopt promptcr
-setopt prompt_subst
-setopt print_eight_bit
-setopt append_history
-setopt auto_list
-setopt auto_menu
-setopt auto_param_keys
-setopt auto_param_slash
-setopt no_beep
-setopt brace_ccl
-setopt extended_glob
-setopt no_hup
-setopt magic_equal_subst
-setopt list_types
-setopt interactive_comments
-setopt multios
-setopt numeric_glob_sort
-setopt share_history
-setopt autopushd
-setopt listpacked
-setopt hist_ignore_all_dups
-setopt hist_save_nodups
-setopt extended_history
-setopt hist_no_store
-setopt hist_no_functions
-setopt hist_reduce_blanks
-setopt hist_ignore_space
-setopt hist_verify
-setopt auto_cd
-setopt auto_pushd
-setopt pushd_ignore_dups
-setopt transient_rprompt
-setopt rc_expand_param
+# http://www.clear-code.com/blog/2011/9/5.html
+zstyle ':completion:*' format '%B%d%b'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:default' menu select=2
+zstyle ':completion:*:default' list-colors ""
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' verbose yes
+zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z} r:|[._-]=*'
+zstyle ':completion:*' completer \
+  _oldlist _complete _match _history _ignored _approximate _prefix
+
+# PROMPT
+prompt_bar_left_self="(%{%B%}%n%{%b%}%{%F{cyan}%}@%{%f%}%{%B%}%m%{%b%})"
+prompt_bar_left_status="(%{%B%F{white}%(?.%K{black}.%K{red})%}%?%{%k%f%b%})"
+prompt_bar_left_date="[%{%B%}%D{%Y/%m/%d %H:%M}%{%b%}]"
+prompt_bar_left="${prompt_bar_left_self} ${prompt_bar_left_status} ${prompt_bar_left_date}"
+prompt_bar_right="[%{%B%K{magenta}%F{white}%}%d%{%f%k%b%}]"
+prompt_left="-%(1j,(%j),)%{%B%}%#%{%b%} "
+PROMPT="${prompt_bar_left} | ${prompt_bar_right}"$'\n'"${prompt_left}"
+#RPROMPT="[%{%B%F{white}%K{magenta}%}%~%{%k%f%b%}]"

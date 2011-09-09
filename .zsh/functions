@@ -1,0 +1,279 @@
+# $HOME/.zsh/functions
+#
+echo "Loading $HOME/.zsh/functions"
+
+# csh 系の setenv をエミュレートする
+# shell> setenv
+function setenv () {
+  ev=$1
+  shift
+  export $ev="$*"
+}
+
+# ネットワーク環境で良く使う X の DISPLAY の設定を「disp ホスト名」一発で
+function disp () {
+  export DISPLAY="$*:0.0"
+}
+
+# コマンド一個だけ root で実行する簡易 sudo の例（要パスワード）
+function sudo-lite () {
+  su "$*"
+}
+
+# ps の出力の中から特定の文字列を検索する
+# shell> psgrep mysql
+function psgrep () {
+  case $SYSTEM {
+  sun)
+    echo "USER       PID %CPU %MEM   SZ  RSS TT STAT START  TIME COMMAND"
+    ps auxw | grep $* ;;
+  sol)
+    echo "USER       PID %CPU %MEM   SZ  RSS TT       S    START  TIME COMMAND"
+    \ps -auwx | grep $* ;;
+  sgi)
+    echo "     UID   PID  PPID  C    STIME TTY     TIME CMD"
+    ps -ef | grep $* ;;
+  gnu)
+    echo "USER       PID %CPU %MEM  SIZE   RSS TTY STAT START   TIME COMMAND"
+    ps auxw | grep -v grep | grep $* ;;
+  bsd)
+    echo "USER       PID %CPU %MEM   VSZ  RSS  TT  STAT STARTED       TIME COMMAND"
+    ps -auxww | grep -v grep | grep $* ;;
+  *)
+    ps auxw | grep $* ;;
+  }
+}
+
+# ls grep
+# shell> lsgrep conf
+function lsgrep () {
+	ls -1 | grep $* | xargs ls -la
+}
+
+# netstat の出力の中から特定の文字列を検索する
+# shell> netgrep 22
+function netgrep() {
+  case $SYSTEM {
+  sol)
+    netstat -an | grep $* ;;
+
+  bsd)
+    netstat -na | grep $* ;;
+
+  *)
+    echo "machine type not defined." ;;
+  }
+}
+
+# pkg_info の中から特定の文字列を検索する。
+
+function pkggrep() {
+  pkg_info -aI | grep $* 
+}
+
+# precmd という名前の関数は、プロンプト表示の前に毎回実行される特別なもの
+#function precmd () {
+## load=`uptime | cut -f 2 -d v | cut -f 1 -d , | cut -f 2 -d : | tr -d ' '`
+#  load=`uptime | sed -e 's/.*: \([^,]*\).*/\1/'`
+#
+#  if [ $load > 0.5 ]; then
+#	echo 'too high'
+#  fi
+#}
+
+# ll
+function ll () {
+    ls -lAFo $1 | ${PAGER} -C;
+}
+
+# nmore
+# 行番号付き more
+function nmore () {
+    cat -n $1 | sed -e 's/^ //' | ${PAGER}
+}
+
+#jman2text
+function jman2txt () {
+    jman $*|colcrt  > $*.jman ;
+}
+
+# pskill
+# -> from bashrc exsample.
+function pskill () {
+        local pid
+        pid=$(ps -ax | grep $1 | grep -v grep | awk '{ print $1 }')
+        echo -n "killing $1 (process $pid)..."
+        kill -9 $pid
+        echo "slaughtered."
+}
+
+# display mail subject.(except ML)
+function subject () {
+        case $1 {
+                -h)     echo 'usage: $0 [-hm] --- display mail subjects';;
+                -m)     egrep '^Subject: ' $MAIL | grep -v "Subject: \[" | nkf -m | cat -n | sed -e 's/Subject: //g' ;;
+                 *)     echo -n 'you have ';
+                        echo -n `from|wc -l|awk '{print $1}'`
+                        echo ' mail.'
+                        egrep '^Subject: ' $MAIL | nkf -me | cat -n | sed -e 's/Subject: //g' ;;
+        }
+}
+
+### portstat
+# NO WARRANTY -> from FreeBSD users-ml ??
+# shell> portstat 123
+
+function portstat() {
+        case $# in
+                1);;
+                *) echo "usage: $0 <port-number>" 1>&2;
+                        return;;
+        esac
+        port=$1
+        addr="`netstat -f inet -Aan | grep "\*\.$port " | awk '{print $1}'`"
+        if [ X$addr != X ]; then
+                data="`fstat | grep $addr | tail -1`"
+
+                user="`echo $data | awk '{print $1}' `"
+                program="`echo $data | awk '{print $2}' `"
+                proto="`echo $data | awk '{print $7}' `"
+
+                echo "=> '$program' is running at $port/$proto by $user."
+
+        else
+                echo "${port}: port not used" 2>&1
+         fi
+}
+
+### remotestat -- check whether the specified remote port is open
+# shell> remotestat 192.168.0.1 80
+
+function remotestat() {
+        case $# in
+		2) nmap -sT -p $2 $1 | egrep "^$2/" ;;
+                *) echo "usage: $0 <host> <port>" 1>&2;
+        esac
+}
+
+function more_no_com() {
+        egrep -v '^#' $1 | jless
+}
+
+function sysmsg() {
+        cat /var/log/messages
+}
+
+function hisgrep () {
+        history -1000 | grep $1 | grep -v 'hisgrep'
+}
+                                       
+function count () {
+	word=` echo $1 | wc -c | sed -e 's/ //g' `
+	echo -n `expr $word - 1`
+	echo ' word(s)'
+}
+
+function search_file() {
+	regex=$1
+	case $# in
+		1) dir='.' ;;
+		2) dir=$2 ;;
+		*) echo "usage: $0 <pattern> <dir>" >& 2
+			return ;;
+	esac
+
+	find ${dir} -type f | perl -lne "print if /${regex}/" 2>/dev/null
+}
+
+# recursive grep search
+function search_grep () {
+	regex=$1
+	case $# in
+		1) dir='.' ;;
+		2) dir=$2 ;;
+		*) echo "usage: $0 <pattern> <dir>" >& 2
+			return ;;
+	esac
+
+	grep -anrI $1 ${dir}/* 2>/dev/null
+}
+
+function _perl_inc () {
+        reply=(` cat ~/.perl_inc `)
+}
+
+
+function entity_pack () {
+        perl -MJcode -e 'while(<STDIN>){$_ =~ s/%([\da-fA-F][\da-fA-F])/pack("C",hex($1))/ge; print Jcode->new($_)->euc }'
+}
+
+function gz2bz2 () {
+        zcat $1 | bzip2 - > $1.bz2
+}
+
+function del () {
+	command mv $* ~/.trash/
+}
+
+function mail_me () {
+	case $# in
+                1)  ;;
+                *) echo "usage: $0 <file>" >& 2
+                        return ;;
+        esac
+
+	mpack -s "[${USER}] $1" $1 ${USER}
+}
+
+function inject () {
+        case $# in
+                1)  ;;
+                *) echo "usage: $0 <address>" >& 2
+                        return ;;
+        esac
+
+    ( echo "To: $1" && echo 'Subject: [test mail]' && echo '' && echo 'this is test mail.' ) | /var/qmail/bin/qmail-inject
+}
+
+
+# if not freebsd..and not wget u have
+function fetchfile () {
+	case $# in
+		2) echo $1; echo $2;
+		  perl -MLWP::Simple -e 'getstore("$1","$2");' ;;
+		*) echo "usage: $0 <uri> <localfile>" 1>&2 ;;
+	esac
+}
+
+function epoch () {
+	perl -e 'print time,"\n"'
+}
+
+function pperl_kill () {
+        case $# in
+                1)  ;;
+                *) echo "usage: $0 <filename>" >& 2
+                        return ;;
+        esac
+
+	pperl -- -k $1
+}
+
+# tree + cat -n + more
+function tmore () {
+    tree $1 | cat -n | sed -e 's/^ //' | ${PAGER}
+}
+
+function digging() {
+        case $# in
+		1) dig $1 any | egrep '^;' ;;
+                2) dig $1 @$2 any | egrep '^;' ;;
+		3) dig $1 @$2 $3 | egrep '^;' ;;
+                *) echo "usage: $0 <name> <server>" 1>&2;
+        esac
+}
+
+function escape_html () {
+	perl -MCGI -e "print CGI::escapeHTML('$1'), qq|\n|"
+}
+
