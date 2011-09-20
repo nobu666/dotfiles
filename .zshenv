@@ -25,9 +25,9 @@ GREP_OPTIONS="--binary-files=without-match"
 GREP_OPTIONS="--directories=recurse $GREP_OPTIONS"
 GREP_OPTIONS="--exclude=\*.tmp $GREP_OPTIONS"
 if grep --help | grep -q -- --exclude-dir; then
-  GREP_OPTIONS="--exclue-dir=.svn $GREP_OPTIONS"
-  GREP_OPTIONS="--exclue-dir=.git $GREP_OPTIONS"
-  GREP_OPTIONS="--exclue-dir=.libs $GREP_OPTIONS"
+  GREP_OPTIONS="--exclude-dir=.svn $GREP_OPTIONS"
+  GREP_OPTIONS="--exclude-dir=.git $GREP_OPTIONS"
+  GREP_OPTIONS="--exclude-dir=.libs $GREP_OPTIONS"
 fi
 if grep --help | grep -q -- --color; then
   GREP_OPTIONS="--color=auto $GREP_OPTIONS"
