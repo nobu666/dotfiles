@@ -1,9 +1,11 @@
 [user]
     name = nobu666
-    email = ogata@talentio.com
+    email = nobutoshi.ogata@smartnews.com
 [core]
-    editor = /usr/bin/vim
+    editor = vim
     autocrlf = false
+    quotepath = false
+    precomposeunicode = true
     quotepath = false
 [color]
     ui = auto
@@ -59,3 +61,7 @@
     bn = branch --no-merged
     gr = grep
     gn = grep -n
+[ghq]
+    root = ~/src
+[credential]
+    helper = osxkeychain
