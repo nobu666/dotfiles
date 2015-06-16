@@ -1,0 +1,86 @@
+"============================
+" General
+"============================
+" 入力欄に自動フォーカスしない
+set focuscontent
+" ビジュアルベルを表示しない
+set visualbell
+highlight Bell display:none
+" :oなどでの補完候補をサーチエンジン、履歴に限定
+set complete=sl
+" Hintモードでアルファベット使用
+set hintchars=asdfghjkl
+" ツールバーはアドオンとタブのみ表示
+"set gui=addons,nobookmarks,nomenu,nonavigation,tab
+" commandモードでIMEオフ
+style! -name=commandline-ime chrome://* #liberator-commandline-command input {ime-mode: inactive;}
+
+"============================
+" Key mapping
+"============================
+
+" dをブラウザ標準の「タブを閉じる」にマッピング
+" vimperatorrcのリロード
+js<<EOM
+liberator.execute("map d <M-w>");
+liberator.execute("map ,r :source<Space>~/.vimperatorrc<CR>");
+EOM
+
+" 移動幅
+noremap j 5j
+noremap k 5k
+" タブ移動
+nnoremap h <C-p>
+nnoremap l <C-n>
+" undo一覧から開く
+nnoremap U :undo<Space>
+" ブラウザ再起動
+nnoremap <C-r> :restart<CR>
+" 全選択
+inoremap <C-a> <Ins><C-a><Ins>
+" VisualモードでC-gで選択しているテキストでGoogle検索
+vmap <silent> <C-g> y<Esc><Esc>P
+
+" ]] / [[ で次へ / 前へ
+set nextpattern=\bnext\b,\bmore\b,next,^次(の)?ページ,\b次.*,→\b,^>$,^(>>|≫)$,^(>|≫),(>|≫)$
+set previouspattern=\bprev|previous\b,prev,^前(の)?ページ,\b前.*,\b←,^<$,^(<<|≪)$,^(<|≪),(<|≪)$
+
+" plugin_loader
+let g:plugin_loader_roots="~/src/github.com/vimpr/vimperator-plugins"
+let g:plugin_loader_plugins="_libly,copy,ldrize_cooperation,feedSomeKeys_3,caret-hint,slideshare,tombloo,hint-tombloo"
+
+" plugin setting
+map <C-l> :slideshare next<CR>
+map <C-h> :slideshare prev<CR>
+nnoremap ,b :tombloo Link<CR>
+
+"============================
+" colorscheme
+"============================
+hi Hint font-family: Arial; font-size: 14px; font-weight: bold; text-shadow: -1px -1px 2px black, 1px -1px 2px black, -1px 1px 2px black, 1px 1px 2px black; color: #33cccc;
+hi HintElem color: gray; background-color: #a1e4e6;
+hi HintActive color: black; background-color: #ff8700;
+
+"============================
+" about:config
+"============================
+
+set! network.dns.disableIPv6=true
+set! network.http.pipelining=true
+set! network.http.proxy.pipelining=true
+set! network.http.pipelining.maxrequests=8
+set! network.http.max-connections-per-server=32
+set! security.dialog_enable_delay=0
+set! browser.tabs.closeWindowWithLastTab=false
+set! browser.cache.memory.capacity=16384
+set! browser.sessionstore.interval=500000
+set! dom.popup_maximum=50
+set! browser.cache.disk.enable=false
+set! browser.cache.memory.capacity=-1
+set! layout.spellcheckDefault=0
+set! javascript.options.mem.high_water_mark=32
+
+"読み込み完了メッセージ
+echo "vimperatorrc loaded."
+
+" vim: set ft=vimperator:

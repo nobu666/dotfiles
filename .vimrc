@@ -1,17 +1,91 @@
-set nocompatible
-filetype off
-set rtp+=~/.vim/vundle/
-call vundle#rc()
+"NeoBundle Scripts-----------------------------
+if has('vim_starting')
+  if &compatible
+    set nocompatible               " Be iMproved
+  endif
 
-Bundle 'neocomplcache'
-Bundle 'svndiff.vim'
-Bundle 'unite.vim'
-Bundle 'vimshell'
-Bundle 'quickrun.vim'
-Bundle 'YankRing.vim'
-Bundle 'commentToggle'
+  " Required:
+  set runtimepath+=/Users/nobutoshiogata/.vim/bundle/neobundle.vim/
+endif
 
-filetype plugin on
+" Required:
+call neobundle#begin(expand('/Users/nobutoshiogata/.vim/bundle'))
+
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" Add or remove your Bundles here:
+NeoBundle 'Shougo/neosnippet.vim'
+NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'ctrlpvim/ctrlp.vim'
+NeoBundle 'flazz/vim-colorschemes'
+NeoBundle 'superbrothers/vim-vimperator'
+NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+NeoBundle 'grep.vim'
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'tacahilo/itamae-snippets'
+
+" Required:
+call neobundle#end()
+
+" Required:
+filetype plugin indent on
+
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
+NeoBundleCheck
+"End NeoBundle Scripts-------------------------
+
+"------------------------------------------------------------------------------------
+" NerdCommenter
+"------------------------------------------------------------------------------------
+let NERDSpaceDelims = 1
+nmap cc NERDCommenterToggle
+vmap cc NERDCommenterToggle
+
+"------------------------------------------------------------------------------------
+" NeoComplCache
+"------------------------------------------------------------------------------------
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+
+" Define dictionary.
+let g:neocomplcache_dictionary_filetype_lists = {
+    \ 'default' : ''
+    \ }
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-l>     neocomplcache#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return neocomplcache#smart_close_popup() . "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplcache#close_popup()
+inoremap <expr><C-e>  neocomplcache#cancel_popup()
+
+let $PYTHONPATH="/Users/nobutoshiogata/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages"
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup
 
 "------------------------------------------------------------------------------------
 " 基本設定
@@ -30,17 +104,11 @@ set whichwrap=b,s,h,l,<,>,[,]    " カーソルを行頭、行末で止まらな
 set showcmd                      " コマンドをステータス行に表示
 set showmode                     " 現在のモードを表示
 set viminfo='50,<1000,s100,\"50  " viminfoファイルの設定
-set modelines=0                  " モードラインは無効
+set modelines=3
 set foldmethod=marker
-
-" 挿入モードでCtrl+kを押すとクリップボードの内容を貼り付けられるようにする "
-imap <C-p>  <ESC>"*pa
 
 " マウス使えるように
 set ttymouse=xterm2
-
-set encoding=euc-jp
-set fileencodings=iso-2022-jp,sjis,utf-8,euc-jp
 
 "------------------------------------------------------------------------------------
 " ステータスライン
@@ -109,11 +177,6 @@ highlight CursorLine term=reverse cterm=reverse
 
 " コマンド実行中は再描画しない
 :set lazyredraw
-
-noremap  
-noremap!  
-noremap <BS> 
-noremap <BS> 
 
 "-------------------------------------------------------------------------------
 " インデント
@@ -261,21 +324,3 @@ set expandtab
 "autocmd BufWritePre * :%s/\s\+$//ge
 " 保存時にtabをスペースに変換する
 "autocmd BufWritePre * :%s/\t/  /ge
-
-"-------------------------------------------------------------------------------
-" プラグイン
-"-------------------------------------------------------------------------------
-
-"------------------------------------
-" vimshell.vim
-"------------------------------------
-let g:vimproc_dll_path = '~/.vim/bundle/autoload/proc.so'
-
-"------------------------------------
-" neocomplecache.vim
-"------------------------------------
-
-
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-
-colorscheme mycolor

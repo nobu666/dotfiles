@@ -1,40 +1,73 @@
-[ -e "${HOME}/.ssh/agent-env" ] && . "${HOME}/.ssh/agent-env"
+export GOPATH=$HOME
+export PATH=$GOPATH/bin:$PATH
+export LC_ALL=ja_JP.UTF-8
+export LANG=ja_JP.UTF-8
+export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages"
 
-fpath=($HOME/.zsh/myfunc $fpath)
+# path
+export PATH="$HOME/.anyenv/bin:$PATH"
+eval "$(anyenv init -)"
+for D in `ls $HOME/.anyenv/envs`
+do
+    export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
+done
+. $HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 
+# autoload
+fpath=(/usr/local/share/zsh-completions $fpath)
 autoload -Uz compinit;compinit
 autoload -Uz colors;colors
 autoload -Uz url-quote-magic;zle -N self-insert url-quote-magic
+zstyle ':completion:*' menu select
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
-export ZUSERDIR=.zsh
+# alias
+alias diff='colordiff'
+alias less='less -R'
+alias ls='ls -G -w'
+alias ll="ls -l"
+alias la="ls -altr"
+alias df="df -h"
+alias du="du -h"
 
-# zsh が使うシェル変数のうちヒストリ（履歴機能）に関するもの
+alias -g C="|cat"
+alias -g H="|head"
+alias -g S="|sort"
+alias -g U="|uniq"
+alias -g T="|tail"
+alias -g G="|grep"
+alias -g L="|less"
+alias -g W="|wc"
+alias -g S="|sed"
+alias -g A="|awk"
 
+# history
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
-setopt append_history
+DIRSTACKSIZE=100
+setopt auto_pushd
 setopt extended_history
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+setopt hist_save_no_dups
+setopt hist_no_store
 setopt share_history
 if [ $UID = 0 ]; then
   unset HISTFILE
   SAVEHIST=0
 fi
 
-# core ファイルのサイズを 0 に抑制する
+# core
 unlimit
 limit core 0
 limit -s
 
-# ファイル作成時のデフォルトのモードを指定する
+# mode
 umask 022
 
-# 端末の設定：Ctrl+H に 1 文字削除、Ctrl+C に割り込み、Ctrl+Z にサスペンド
-#stty erase '^H'
-#stty intr '^C'
-#stty susp '^Z'
-
-### key bindings
+# key bindings
 bindkey -e                          # EDITOR=vi -> bindkey -v
 bindkey '^U' backward-kill-line     # override kill-whole-line
 bindkey '^[h' vi-backward-kill-word # override run-help
@@ -45,73 +78,6 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
-
-if [ -f $ZUSERDIR/zshoptions ]; then
-  source $ZUSERDIR/zshoptions
-fi
-if [ -f $ZUSERDIR/aliases ]; then
-  source $ZUSERDIR/aliases
-fi
-if [ -f $ZUSERDIR/functions ]; then
-  source $ZUSERDIR/functions
-fi
-if [ -f $ZUSERDIR/lscolors ]; then
-  source $ZUSERDIR/lscolors
-fi
-if [ -f $ZUSERDIR/zshrc.user ]; then
-  source $ZUSERDIR/zshrc.user
-fi
-
-if [ -n "${WINDOW}" ]; then
-  preexec () {
-    1="$1 "
-    echo -ne "\ek${${(s: :)1}[0]}\e\\"
-  }
-fi
-
-# gitで^とか~とかがextended_blobと被って困るのでなんとかする
-# http://subtech.g.hatena.ne.jp/cho45/20080617/1213629154
-typeset -A abbreviations
-abbreviations=(
-  "L"    "| $PAGER"
-  "G"    "| grep"
-
-  "HEAD^"     "HEAD\\^"
-  "HEAD^^"    "HEAD\\^\\^"
-  "HEAD^^^"   "HEAD\\^\\^\\^"
-  "HEAD^^^^"  "HEAD\\^\\^\\^\\^\\^"
-  "HEAD^^^^^" "HEAD\\^\\^\\^\\^\\^"
-)
-
-magic-abbrev-expand () {
-  local MATCH
-  LBUFFER=${LBUFFER%%(#m)[-_a-zA-Z0-9^]#}
-  LBUFFER+=${abbreviations[$MATCH]:-$MATCH}
-}
-
-magic-abbrev-expand-and-insert () {
-  magic-abbrev-expand
-  zle self-insert
-}
-
-magic-abbrev-expand-and-accept () {
-  magic-abbrev-expand
-  zle accept-line
-}
-
-no-magic-abbrev-expand () {
-  LBUFFER+=' '
-}
-
-zle -N magic-abbrev-expand
-zle -N magic-abbrev-expand-and-insert
-zle -N magic-abbrev-expand-and-accept
-zle -N no-magic-abbrev-expand
-bindkey "\r"  magic-abbrev-expand-and-accept # M-x RET はできなくなる
-bindkey "^J"  accept-line # no magic
-bindkey " "   magic-abbrev-expand-and-insert
-bindkey "."   magic-abbrev-expand-and-insert
-bindkey "^x " no-magic-abbrev-expand
 
 # http://www.clear-code.com/blog/2011/9/5.html
 zstyle ':completion:*' format '%B%d%b'
@@ -125,12 +91,29 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z} r:|[._-]=*'
 zstyle ':completion:*' completer \
   _oldlist _complete _match _history _ignored _approximate _prefix
 
-# PROMPT
-prompt_bar_left_self="(%{%B%}%n%{%b%}%{%F{cyan}%}@%{%f%}%{%B%}%m%{%b%})"
-prompt_bar_left_status="(%{%B%F{white}%(?.%K{black}.%K{red})%}%?%{%k%f%b%})"
-prompt_bar_left_date="[%{%B%}%D{%Y/%m/%d %H:%M}%{%b%}]"
-prompt_bar_left="${prompt_bar_left_self} ${prompt_bar_left_status} ${prompt_bar_left_date}"
-prompt_bar_right="[%{%B%K{magenta}%F{white}%}%d%{%f%k%b%}]"
-prompt_left="-%(1j,(%j),)%{%B%}%#%{%b%} "
-PROMPT="${prompt_bar_left} | ${prompt_bar_right}"$'\n'"${prompt_left}"
-#RPROMPT="[%{%B%F{white}%K{magenta}%}%~%{%k%f%b%}]"
+function peco-src () {
+  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd ${selected_dir}"
+    zle accept-line
+  fi
+  zle clear-screen
+}
+zle -N peco-src
+bindkey '^]' peco-src
+
+function peco-select-history() {
+    local tac
+    if which tac > /dev/null; then
+        tac="tac"
+    else
+        tac="tail -r"
+    fi
+    BUFFER=$(\history -n 1 | \
+        eval $tac | \
+        peco --query "$LBUFFER")
+    CURSOR=$#BUFFER
+    zle clear-screen
+}
+zle -N peco-select-history
+bindkey '^r' peco-select-history
