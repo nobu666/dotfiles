@@ -16,6 +16,7 @@ do
     export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
 done
 . $HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+. $HOME/.anyenv/envs/pyenv/versions/2.7.9/bin/aws_zsh_completer.sh
 
 # autoload
 fpath=(/usr/local/share/zsh-completions $fpath)
