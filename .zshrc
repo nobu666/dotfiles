@@ -3,6 +3,7 @@ export PATH=$GOPATH/bin:$PATH
 export LC_ALL=ja_JP.UTF-8
 export LANG=ja_JP.UTF-8
 export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages"
+export HOMEBREW_GITHUB_API_TOKEN=$(security 2>&1 >/dev/null find-generic-password -ga homebrew-github-api-key | ruby -e 'print $1 if STDIN.gets =~ /^password: "(.*)"$/')
 export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2376
 export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
 export DOCKER_TLS_VERIFY=1
