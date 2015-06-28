@@ -52,7 +52,16 @@ let g:plugin_loader_plugins="_libly,copy,ldrize_cooperation,feedSomeKeys_3,caret
 " plugin setting
 map <C-l> :slideshare next<CR>
 map <C-h> :slideshare prev<CR>
-nnoremap ,b :tombloo Link<CR>
+nnoremap B :tombloo Link<CR>
+
+" feedSomeKeys_3.js, tombloo.js, x-hint.js
+lazy fmaps -e=vkeydown -u='^https://www\.google\.(co\.jp|com)/search\?q=' j k
+lazy fmaps -u='^https?://mail\.google\.com/(mail|a)/' c j k n p o u e x s r a # [ ] z ? gi gs gt gd ga gc
+lazy fmaps -u='^http://b\.hatena\.ne\.jp/(?!(entry|articles|guide))' j k o,oj e a,b
+lazy fmaps -e=vkeydown -u='^http://www\.tumblr\.com/' j k r,h q p n L,l <S-e>
+lazy fmaps -u='^http://reader\.livedoor\.com/reader/' j k s a p v z <S-z> ,r,r < > o,vj J,<Space> K,<S-Space> q w g
+nnoremap -u='^http://reader\.livedoor\.com/reader/' r :xh r //*[contains(concat(" ",normalize-space(@class)," "), " hilight ")]//*[@class="item_body"]//img<CR>
+nnoremap -u='^http://reader\.livedoor\.com/reader/' c :xh c //*[contains(concat(" ",normalize-space(@class)," "), " hilight ")]//*[@class="item_info"]/a[1]<CR>
 
 "============================
 " colorscheme
