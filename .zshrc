@@ -7,6 +7,8 @@ export HOMEBREW_GITHUB_API_TOKEN=$(security 2>&1 >/dev/null find-generic-passwor
 export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2376
 export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
 export DOCKER_TLS_VERIFY=1
+export AWS_ACCESS_KEY=$(grep aws_access ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
+export AWS_SECRET_ACCESS_KEY=$(grep aws_secret ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 
 # path
 export PATH="$HOME/.anyenv/bin:$PATH"
