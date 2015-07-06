@@ -108,7 +108,7 @@ set showmode                     " 現在のモードを表示
 set viminfo='50,<1000,s100,\"50  " viminfoファイルの設定
 set modelines=3
 set foldmethod=marker
-
+colorscheme wombat
 " マウス使えるように
 set ttymouse=xterm2
 
