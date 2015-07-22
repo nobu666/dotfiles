@@ -20,8 +20,14 @@
     show = colordiff | less
     diff = colordiff | less
 [merge]
-    tool = vimdiff
+    keepBackup = false
+    tool = p4merge
     ff = false
+[mergetool "p4merge"]
+    cmd = p4merge "\"$PWD/$BASE\"" "\"$PWD/$REMOTE\"" "\"$PWD/$LOCAL\"" "\"$PWD/$MERGED\""
+    keepTemporaries = false
+    trustExitCode = false
+    keepBackup = false
 [pull]
     rebase = true
 [branch]

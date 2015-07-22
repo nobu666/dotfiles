@@ -27,6 +27,7 @@ NeoBundle 'grep.vim'
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'tacahilo/itamae-snippets'
+NeoBundle 'fatih/vim-go'
 
 " Required:
 call neobundle#end()

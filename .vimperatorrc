@@ -55,13 +55,10 @@ map <C-h> :slideshare prev<CR>
 nnoremap B :tombloo Link<CR>
 
 " feedSomeKeys_3.js, tombloo.js, x-hint.js
-lazy fmaps -e=vkeydown -u='^https://www\.google\.(co\.jp|com)/search\?q=' j k
-lazy fmaps -u='^https?://mail\.google\.com/(mail|a)/' c j k n p o u e x s r a # [ ] z ? gi gs gt gd ga gc
-lazy fmaps -u='^http://b\.hatena\.ne\.jp/(?!(entry|articles|guide))' j k o,oj e a,b
-lazy fmaps -e=vkeydown -u='^http://www\.tumblr\.com/' j k r,h q p n L,l <S-e>
-lazy fmaps -u='^http://reader\.livedoor\.com/reader/' j k s a p v z <S-z> ,r,r < > o,vj J,<Space> K,<S-Space> q w g
-nnoremap -u='^http://reader\.livedoor\.com/reader/' r :xh r //*[contains(concat(" ",normalize-space(@class)," "), " hilight ")]//*[@class="item_body"]//img<CR>
-nnoremap -u='^http://reader\.livedoor\.com/reader/' c :xh c //*[contains(concat(" ",normalize-space(@class)," "), " hilight ")]//*[@class="item_info"]/a[1]<CR>
+lazy fmaps -urls='mail\.google\.com/mail' c / j k n p o u e x s r a # [ ] z ? gi gs gt gd ga gb gc gl b <S-i> <C-h> <C-Enter>
+lazy fmaps -urls='www\.google\.com/calendar' -events=vkeydown k j r t d w m c <Del> / + q s ?
+lazy fmaps -urls='docs\.google\.com/' <Del> <C-x> <C-d> <C-v> <C-c> <C-y> <C-z> <C-a>
+lazy fmaps -urls='reader\.livedoor\.com/reader/' j k s a p v z <S-z> ,r,r < > o,vj J,<Space> K,<S-Space> q w g
 
 "============================
 " colorscheme
