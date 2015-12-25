@@ -9,8 +9,10 @@ export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
 export DOCKER_TLS_VERIFY=1
 export AWS_ACCESS_KEY=$(grep aws_access ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 export AWS_SECRET_ACCESS_KEY=$(grep aws_secret ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
+export AWS_REGION=ap-northeast-1
 
 # path
+eval "$(direnv hook zsh)"
 export PATH="$HOME/.anyenv/bin:$PATH"
 eval "$(anyenv init -)"
 for D in `ls $HOME/.anyenv/envs`
@@ -98,29 +100,21 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z} r:|[._-]=*'
 zstyle ':completion:*' completer \
   _oldlist _complete _match _history _ignored _approximate _prefix
 
-function peco-src () {
-  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
-  if [ -n "$selected_dir" ]; then
-    BUFFER="cd ${selected_dir}"
-    zle accept-line
-  fi
-  zle clear-screen
-}
-zle -N peco-src
-bindkey '^]' peco-src
+autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+add-zsh-hook chpwd chpwd_recent_dirs
 
-function peco-select-history() {
-    local tac
-    if which tac > /dev/null; then
-        tac="tac"
-    else
-        tac="tail -r"
-    fi
-    BUFFER=$(\history -n 1 | \
-        eval $tac | \
-        peco --query "$LBUFFER")
-    CURSOR=$#BUFFER
-    zle clear-screen
+archey -c
+
+fpath=($HOME/.zsh/anyframe(N-/) $fpath)
+autoload -Uz anyframe-init
+anyframe-init
+
+bindkey "^r" anyframe-widget-put-history
+bindkey "^x^r" anyframe-widget-execute-history
+bindkey "^]" anyframe-widget-cd-ghq-repository
+bindkey "^k" anyframe-widget-kill
+bindkey "^b" anyframe-widget-cdr
+
+function agvim () {
+  vim $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print "-c " $2 " " $1}')
 }
-zle -N peco-select-history
-bindkey '^r' peco-select-history

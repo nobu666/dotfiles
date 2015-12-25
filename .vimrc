@@ -185,6 +185,7 @@ highlight CursorLine term=reverse cterm=reverse
 " インデント
 "-------------------------------------------------------------------------------
 set autoindent
+set smartindent
 set cindent
 set ts=4 sts=4 sw=4 et
 set tabstop=4

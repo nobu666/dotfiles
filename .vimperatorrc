@@ -47,18 +47,25 @@ set previouspattern=\bprev|previous\b,prev,^前(の)?ページ,\b前.*,\b←,^<$
 
 " plugin_loader
 let g:plugin_loader_roots="~/src/github.com/vimpr/vimperator-plugins"
-let g:plugin_loader_plugins="_libly,copy,ldrize_cooperation,feedSomeKeys_3,caret-hint,slideshare,tombloo,hint-tombloo"
+let g:plugin_loader_plugins="_libly,copy,feedSomeKeys_3,caret-hint,slideshare,tombloo,hint-tombloo,speakerdeck"
 
 " plugin setting
-map <C-l> :slideshare next<CR>
-map <C-h> :slideshare prev<CR>
+"" slideshare
+nnoremap -urls=www\\.slideshare\\.net <C-l> :slideshare next<CR>
+nnoremap -urls=www\\.slideshare\\.net <C-h> :slideshare prev<CR>
+nnoremap -urls=ssslide\\.com <C-l> :slideshare next<CR>
+nnoremap -urls=ssslide\\.com <C-h> :slideshare prev<CR>
+"" speakerdeck
+nnoremap -urls=speakerdeck\\.com <C-l> :speakerdeck next<CR>
+nnoremap -urls=speakerdeck\\.com <C-h> :speakerdeck prev<CR>
+"" tombloo
 nnoremap B :tombloo Link<CR>
 
 " feedSomeKeys_3.js, tombloo.js, x-hint.js
-lazy fmaps -urls='mail\.google\.com/mail' c / j k n p o u e x s r a # [ ] z ? gi gs gt gd ga gb gc gl b <S-i> <C-h> <C-Enter>
-lazy fmaps -urls='www\.google\.com/calendar' -events=vkeydown k j r t d w m c <Del> / + q s ?
-lazy fmaps -urls='docs\.google\.com/' <Del> <C-x> <C-d> <C-v> <C-c> <C-y> <C-z> <C-a>
-lazy fmaps -urls='reader\.livedoor\.com/reader/' j k s a p v z <S-z> ,r,r < > o,vj J,<Space> K,<S-Space> q w g
+lazy fmaps -urls='mail\\.google\\.com/mail' c / j k n p o u e x s r a # [ ] z ? gi gs gt gd ga gb gc gl b <S-i> <C-h> <C-Enter>
+lazy fmaps -urls='www\\.google\\.com/calendar' -events=vkeydown k j r t d w m c <Del> / + q s ?
+lazy fmaps -urls='docs\\.google\\.com/' <Del> <C-x> <C-d> <C-v> <C-c> <C-y> <C-z> <C-a>
+lazy fmaps -urls='reader\\.livedoor\\.com/reader/' j k s a p v z <S-z> ,r,r < > o,vj J,<Space> K,<S-Space> q w g
 
 "============================
 " colorscheme
