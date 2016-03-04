@@ -68,6 +68,8 @@
     bn = branch --no-merged
     gr = grep
     gn = grep -n
+    b  = browse
+    pr = pull-request
 [ghq]
     root = ~/src
 [credential]

@@ -1,3 +1,12 @@
+# autoload
+fpath=(/usr/local/share/zsh-completions $fpath)
+autoload -Uz compinit;compinit
+autoload -Uz colors;colors
+autoload -Uz url-quote-magic;zle -N self-insert url-quote-magic
+zstyle ':completion:*' menu select
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
+zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
+
 export GOPATH=$HOME
 export PATH=$GOPATH/bin:$PATH
 export LC_ALL=ja_JP.UTF-8
@@ -22,23 +31,16 @@ done
 . $HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 . $HOME/.anyenv/envs/pyenv/versions/2.7.9/bin/aws_zsh_completer.sh
 
-# autoload
-fpath=(/usr/local/share/zsh-completions $fpath)
-autoload -Uz compinit;compinit
-autoload -Uz colors;colors
-autoload -Uz url-quote-magic;zle -N self-insert url-quote-magic
-zstyle ':completion:*' menu select
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
-zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
-
 # alias
-alias diff='colordiff'
-alias less='less -R'
-alias ls='ls -G -w'
+eval "$(hub alias -s)"
+alias diff="colordiff"
+alias less="less -R"
+alias ls="ls -G -w"
 alias ll="ls -l"
 alias la="ls -altr"
 alias df="df -h"
 alias du="du -h"
+alias clone="ghq get"
 
 alias -g C="|cat"
 alias -g H="|head"
@@ -50,6 +52,12 @@ alias -g L="|less"
 alias -g W="|wc"
 alias -g S="|sed"
 alias -g A="|awk"
+alias -g X="|xargs"
+
+alias -s py=python
+alias -s rb=ruby
+alias -s {png,jpg,bmp,PNG,JPG,BMP}=imgcat
+alias -s {gz,tgz,zip,lzh,bz2,tbz,Z,tar,arj,xz}=extract
 
 # history
 HISTFILE=$HOME/.zsh_history
@@ -93,12 +101,18 @@ zstyle ':completion:*' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*:default' menu select=2
 zstyle ':completion:*:default' list-colors ""
-zstyle ':completion:*' use-cache yes
-zstyle ':completion:*' verbose yes
 zstyle ':completion:sudo:*' environ PATH="$SUDO_PATH:$PATH"
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z} r:|[._-]=*'
 zstyle ':completion:*' completer \
   _oldlist _complete _match _history _ignored _approximate _prefix
+
+# completion
+setopt mark_dirs
+setopt interactive_comments
+setopt magic_equal_subst
+setopt print_eight_bit
+setopt extended_glob
+setopt globdots
 
 autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
 add-zsh-hook chpwd chpwd_recent_dirs
@@ -117,4 +131,28 @@ bindkey "^b" anyframe-widget-cdr
 
 function agvim () {
   vim $(ag $@ | peco --query "$LBUFFER" | awk -F : '{print "-c " $2 " " $1}')
+}
+
+function alc() {
+  if [ $# != 0 ]; then
+    w3m "http://eow.alc.co.jp/$*/UTF-8/?ref=sa"
+  else
+    w3m "http://www.alc.co.jp/"
+  fi
+}
+
+function extract() {
+  case $1 in
+    *.tar.gz|*.tgz) tar xzvf $1;;
+    *.tar.xz) tar Jxvf $1;;
+    *.zip) unzip $1;;
+    *.lzh) lha e $1;;
+    *.tar.bz2|*.tbz) tar xjvf $1;;
+    *.tar.Z) tar zxvf $1;;
+    *.gz) gzip -d $1;;
+    *.bz2) bzip2 -dc $1;;
+    *.Z) uncompress $1;;
+    *.tar) tar xvf $1;;
+    *.arj) unarj $1;;
+  esac
 }
