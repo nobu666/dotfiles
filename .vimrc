@@ -1,15 +1,12 @@
 "NeoBundle Scripts-----------------------------
-if has('vim_starting')
-  if &compatible
-    set nocompatible               " Be iMproved
-  endif
-
-  " Required:
-  set runtimepath+=/Users/nobutoshiogata/.vim/bundle/neobundle.vim/
+if &compatible
+  set nocompatible
 endif
 
+set runtimepath+=~/.vim/bundle/neobundle.vim/
+
 " Required:
-call neobundle#begin(expand('/Users/nobutoshiogata/.vim/bundle'))
+call neobundle#begin(expand('~/.vim/bundle'))
 
 " Let NeoBundle manage NeoBundle
 " Required:
@@ -28,6 +25,8 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'scrooloose/nerdcommenter'
 NeoBundle 'tacahilo/itamae-snippets'
 NeoBundle 'fatih/vim-go'
+NeoBundle 'vim-airline/vim-airline'
+NeoBundle 'vim-airline/vim-airline-themes'
 
 " Required:
 call neobundle#end()
@@ -85,10 +84,10 @@ inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><C-y>  neocomplcache#close_popup()
 inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
-let $PYTHONPATH="/Users/nobutoshiogata/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages"
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline#extensions#tabline#left_alt_sep = '|'
 
 "------------------------------------------------------------------------------------
 " 基本設定
@@ -111,7 +110,9 @@ set modelines=3
 set foldmethod=marker
 colorscheme wombat
 " マウス使えるように
-set ttymouse=xterm2
+if !has('nvim')
+  set ttymouse=xterm2
+endif
 
 "------------------------------------------------------------------------------------
 " ステータスライン
