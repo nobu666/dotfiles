@@ -1,6 +1,6 @@
 "NeoBundle Scripts-----------------------------
 if &compatible
-  set nocompatible
+    set nocompatible
 endif
 
 set runtimepath+=~/.vim/bundle/neobundle.vim/
@@ -27,6 +27,19 @@ NeoBundle 'tacahilo/itamae-snippets'
 NeoBundle 'fatih/vim-go'
 NeoBundle 'vim-airline/vim-airline'
 NeoBundle 'vim-airline/vim-airline-themes'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'Shougo/unite.vim'
+NeoBundle 'Shougo/neomru.vim'
+NeoBundle 'tpope/vim-endwise'
+NeoBundle 'nathanaelkane/vim-indent-guides'
+NeoBundle 'bronson/vim-trailing-whitespace'
+NeoBundle 'marcus/rsense'
+NeoBundle 'Shougo/vimproc.vim', {
+    \   'build' : {
+    \     'mac' : 'make -f make_mac.mak'
+    \   },
+    \ }
+NeoBundle 'Shougo/neocomplcache-rsense.vim'
 
 " Required:
 call neobundle#end()
@@ -40,50 +53,81 @@ NeoBundleCheck
 "End NeoBundle Scripts-------------------------
 
 "------------------------------------------------------------------------------------
+" indent-guides
+"------------------------------------------------------------------------------------
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_auto_colors = 0
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd  ctermbg=black
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=darkgrey
+
+"------------------------------------------------------------------------------------
 " NerdCommenter
 "------------------------------------------------------------------------------------
 let NERDSpaceDelims = 1
 nmap cc NERDCommenterToggle
 vmap cc NERDCommenterToggle
 
+nnoremap <silent><C-e> :NERDTreeToggle<CR>
+
 "------------------------------------------------------------------------------------
-" NeoComplCache
+" Unite
+" http://blog.remora.cx/2010/12/vim-ref-with-unite.html
+" http://mattn.kaoriya.net/software/vim/20150209151638.htm
 "------------------------------------------------------------------------------------
-" Disable AutoComplPop.
+let g:unite_source_history_yank_enable = 1
+try
+    let g:unite_source_rec_async_command='ag --nocolor --nogroup -g ""'
+    call unite#filters#matcher_default#use(['matcher_fuzzy'])
+catch
+endtry
+" search a file in the filetree
+noremap <C-n> :split<cr> :<C-u>Unite -start-insert file_rec/async<cr>
+" reset not it is <C-l> normally
+:nnoremap <space>r <Plug>(unite_restart)
+" バッファ一覧
+noremap <C-p> :Unite buffer<CR>
+" ファイル一覧
+noremap <C-b> :Unite -buffer-name=file file<CR>
+" 最近使ったファイルの一覧
+noremap <C-z> :Unite file_mru<CR>
+" sourcesを「今開いているファイルのディレクトリ」とする
+noremap :uff :<C-u>UniteWithBufferDir file -buffer-name=file<CR>
+" ウィンドウを分割して開く
+au FileType unite nnoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+au FileType unite inoremap <silent> <buffer> <expr> <C-J> unite#do_action('split')
+" ウィンドウを縦に分割して開く
+au FileType unite nnoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+au FileType unite inoremap <silent> <buffer> <expr> <C-K> unite#do_action('vsplit')
+" ESCキーを2回押すと終了する
+au FileType unite nnoremap <silent> <buffer> <ESC><ESC> :q<CR>
+au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>:q<CR>
+
+"------------------------------------------------------------------------------------
+" rsense
+"------------------------------------------------------------------------------------
+let g:rsenseHome =  "/usr/local/Cellar/rsense/0.3/libexec"
+let g:rsenseUseOmniFunc = 1
+let g:neocomplcache#sources#rsense#home_directory = '/usr/local/Cellar/rsense/0.3/libexec'
+
+"------------------------------------------------------------------------------------
+" NeoComplete
+"------------------------------------------------------------------------------------
 let g:acp_enableAtStartup = 0
-" Use neocomplcache.
 let g:neocomplcache_enable_at_startup = 1
-" Use smartcase.
 let g:neocomplcache_enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplcache_min_syntax_length = 3
-let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
-" AutoComplPop like behavior.
-let g:neocomplcache_enable_auto_select = 1
+let g:neocomplcache_max_list = 20
+let g:neocomplcache_manual_completion_start_length = 3
+let g:neocomplcache_enable_ignore_case = 1
 
-" Define dictionary.
-let g:neocomplcache_dictionary_filetype_lists = {
-    \ 'default' : ''
-    \ }
+" .や::を入力したときにオムニ補完が有効になるようにする
+if !exists('g:neocomplcache_force_omni_input_patterns')
+    let g:neocomplcache_force_omni_input_patterns = {}
+endif
+let g:neocomplcache_force_omni_input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplcache#undo_completion()
-inoremap <expr><C-l>     neocomplcache#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return neocomplcache#smart_close_popup() . "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y>  neocomplcache#close_popup()
-inoremap <expr><C-e>  neocomplcache#cancel_popup()
-
+"------------------------------------------------------------------------------------
+" airline
+"------------------------------------------------------------------------------------
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#left_sep = ' '
@@ -111,7 +155,12 @@ set foldmethod=marker
 colorscheme wombat
 " マウス使えるように
 if !has('nvim')
-  set ttymouse=xterm2
+    set ttymouse=xterm2
+endif
+
+if (exists('+colorcolumn'))
+    set colorcolumn=120
+    highlight ColorColumn ctermbg=9
 endif
 
 "------------------------------------------------------------------------------------
@@ -188,9 +237,9 @@ highlight CursorLine term=reverse cterm=reverse
 set autoindent
 set smartindent
 set cindent
-set ts=4 sts=4 sw=4 et
-set tabstop=4
-set shiftwidth=4
+set ts=2 sts=2 sw=2 et
+set tabstop=2
+set shiftwidth=2
 
 "-------------------------------------------------------------------------------
 " 補完・履歴

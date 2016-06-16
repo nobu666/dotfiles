@@ -19,6 +19,7 @@ export DOCKER_TLS_VERIFY=1
 export AWS_ACCESS_KEY=$(grep aws_access ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 export AWS_SECRET_ACCESS_KEY=$(grep aws_secret ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 export AWS_REGION=ap-northeast-1
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 
 # path
 eval "$(direnv hook zsh)"
@@ -33,6 +34,7 @@ done
 
 # alias
 eval "$(hub alias -s)"
+alias vi="/usr/local/bin/vim"
 alias diff="colordiff"
 alias less="less -R"
 alias ls="ls -G -w"
