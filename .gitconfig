@@ -16,9 +16,12 @@
     interactive = auto
     grep = auto
 [pager]
-    log = colordiff | less
-    show = colordiff | less
-    diff = colordiff | less
+    # https://github.com/git/git/blob/master/contrib/diff-highlight/diff-highlight
+    log = diff-highlight | less
+    show = diff-highlight | less
+    diff = diff-highlight | less
+[interactive]
+    diffFilter = diff-highlight
 [merge]
     keepBackup = false
     tool = p4merge
