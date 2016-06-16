@@ -17,11 +17,13 @@
     grep = auto
 [pager]
     # https://github.com/git/git/blob/master/contrib/diff-highlight/diff-highlight
-    log = diff-highlight | less
-    show = diff-highlight | less
-    diff = diff-highlight | less
+    log = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+    show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+    diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
 [interactive]
     diffFilter = diff-highlight
+[diff]
+    compactionHeuristic = true
 [merge]
     keepBackup = false
     tool = p4merge
