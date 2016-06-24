@@ -7,11 +7,11 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*:cd:*' ignore-parents parent pwd
 zstyle ':completion:*:descriptions' format '%BCompleting%b %U%d%u'
 
-export GOPATH=$HOME
-export PATH=$GOPATH/bin:$PATH
+export GOPATH=$HOME/.go
+export PATH=$GOPATH/bin:$PATH:$HOME/.local/bin:/usr/local/share/git-core/contrib/diff-highlight
 export LC_ALL=ja_JP.UTF-8
 export LANG=ja_JP.UTF-8
-export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages"
+export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages"
 export HOMEBREW_GITHUB_API_TOKEN=$(security 2>&1 >/dev/null find-generic-password -ga homebrew-github-api-key | ruby -e 'print $1 if STDIN.gets =~ /^password: "(.*)"$/')
 export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2376
 export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
@@ -29,8 +29,8 @@ for D in `ls $HOME/.anyenv/envs`
 do
     export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
 done
-. $HOME/.anyenv/envs/pyenv/versions/2.7.9/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-. $HOME/.anyenv/envs/pyenv/versions/2.7.9/bin/aws_zsh_completer.sh
+. $HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages/powerline/bindings/zsh/powerline.zsh
+. /usr/local/Cellar/awscli/$(aws --version 2>&1 | awk '{print $1}' | awk -F/ '{print $2}')/libexec/bin/aws_zsh_completer.sh
 
 # alias
 eval "$(hub alias -s)"
