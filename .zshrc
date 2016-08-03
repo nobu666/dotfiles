@@ -13,6 +13,7 @@ export LC_ALL=ja_JP.UTF-8
 export LANG=ja_JP.UTF-8
 export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages"
 export HOMEBREW_GITHUB_API_TOKEN=$(security 2>&1 >/dev/null find-generic-password -ga homebrew-github-api-key | ruby -e 'print $1 if STDIN.gets =~ /^password: "(.*)"$/')
+export HOMEBREW_CASK_OPTS="--caskroom=/opt/homebrew-cask/Caskroom"
 export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2376
 export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
 export DOCKER_TLS_VERIFY=1
