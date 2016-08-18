@@ -14,9 +14,6 @@ export LANG=ja_JP.UTF-8
 export PYTHONPATH="$HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages"
 export HOMEBREW_GITHUB_API_TOKEN=$(security 2>&1 >/dev/null find-generic-password -ga homebrew-github-api-key | ruby -e 'print $1 if STDIN.gets =~ /^password: "(.*)"$/')
 export HOMEBREW_CASK_OPTS="--caskroom=/opt/homebrew-cask/Caskroom"
-export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2376
-export DOCKER_CERT_PATH=$HOME/.boot2docker/certs/boot2docker-vm
-export DOCKER_TLS_VERIFY=1
 export AWS_ACCESS_KEY=$(grep aws_access ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 export AWS_SECRET_ACCESS_KEY=$(grep aws_secret ~/.aws/credentials | awk -F= '{print $2}' | tr -d ' ')
 export AWS_REGION=ap-northeast-1
@@ -31,7 +28,7 @@ do
     export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
 done
 . $HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages/powerline/bindings/zsh/powerline.zsh
-. /usr/local/Cellar/awscli/$(aws --version 2>&1 | awk '{print $1}' | awk -F/ '{print $2}')/libexec/bin/aws_zsh_completer.sh
+. /usr/local/Cellar/awscli/$(ls /usr/local/Cellar/awscli/ | gsort -rV | head -n1)/libexec/bin/aws_zsh_completer.sh
 
 # alias
 eval "$(hub alias -s)"
