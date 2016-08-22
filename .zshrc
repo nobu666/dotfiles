@@ -27,6 +27,7 @@ for D in `ls $HOME/.anyenv/envs`
 do
     export PATH="$HOME/.anyenv/envs/$D/shims:$PATH"
 done
+powerline-daemon -q
 . $HOME/.anyenv/envs/pyenv/versions/$(cat $HOME/.anyenv/envs/pyenv/version)/lib/python$(cat $HOME/.anyenv/envs/pyenv/version|awk -F. '{print $1 "." $2}')/site-packages/powerline/bindings/zsh/powerline.zsh
 . /usr/local/Cellar/awscli/$(ls /usr/local/Cellar/awscli/ | gsort -rV | head -n1)/libexec/bin/aws_zsh_completer.sh
 
@@ -34,7 +35,7 @@ done
 eval "$(hub alias -s)"
 alias vi="/usr/local/bin/vim"
 alias diff="colordiff"
-alias less="less -R"
+alias less="lv"
 alias ls="ls -G -w"
 alias ll="ls -l"
 alias la="ls -altr"

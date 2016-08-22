@@ -17,9 +17,9 @@
     grep = auto
 [pager]
     # https://github.com/git/git/blob/master/contrib/diff-highlight/diff-highlight
-    log = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
-    show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
-    diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-less}
+    log = (diff-highlight 2>/dev/null || cat) | ${PAGER:-lv}
+    show = (diff-highlight 2>/dev/null || cat) | ${PAGER:-lv}
+    diff = (diff-highlight 2>/dev/null || cat) | ${PAGER:-lv}
 [interactive]
     diffFilter = diff-highlight
 [diff]
